@@ -4,20 +4,48 @@
 <head>
     <meta charset="UTF-8">
     <title>{{title}}</title>
+    <link rel="stylesheet" href="../static/css/style.css">
 </head>
 
 <body>
-    <a href="/auth/register">Register</a>
-    <a href="/auth/login">Login</a>
-    <a href="/auth/logout">Logout</a>
-    {{#if errors}}
-    <div>
+
+    <div id="box">
+
+        <!-- In case of error, you should display div with class "error-box" -->
+        <!-- You can choose to display the first error or all of them (error message/s in your opinion) -->
         {{#each errors}}
-        <p>{{this}}</p>
+        <div class="error-box">
+            <p>{{this}}</p>
+        </div>
         {{/each}}
+
+        <nav>
+
+            <!-- Do not forget to change the path to the image -->
+            <img src="../static/img/art-logo.png" alt="logo">
+            <a href="/">ArtGallery</a>
+
+            <ul class="menu">
+                <li><a href="#">Gallery</a></li>
+                <!-- Logged users -->
+                <li><a href="#">Create Publication</a></li>
+                <li><a href="#">Profile</a></li>
+                <li><a href="/auth/logout">Logout</a></li>
+                <!-- Guest users -->
+                <li><a href="/auth/login">Login</a></li>
+                <li><a href="/auth/register">Register</a></li>
+            </ul>
+
+        </nav>
+
+        <main>
+            {{{body}}}
+        </main>
+
+        <footer>
+            © Js Back-End Retake Exam 2021
+        </footer>
     </div>
-    {{/if}}
-    {{{body}}}
 </body>
 
 </html>

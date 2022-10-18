@@ -4,7 +4,7 @@ const User = require('../models/User');
 
 const JWT_SECRET = 'sdhg94873htfuld83y9ruske';
 
-async function register(username, password) {
+async function register(username, address, password) {
     const existing = await User.findOne({ username }).collation({ locale: 'en', strength: 2 });
     if (existing) {
         throw new Error('Username is taken');
@@ -13,10 +13,10 @@ async function register(username, password) {
 
     const user = await User.create({
         username,
+        address,
         hashedPassword
     });
 
-    // TODO see assignment if registration creates user session
     return createSession(user);
 }
 
