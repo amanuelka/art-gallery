@@ -1,14 +1,18 @@
+const { isGuest } = require('../middlewares/guards');
 const { register, login } = require('../services/userService');
 const { parseError } = require('../util/parser');
 
 const authController = require('express').Router();
 
-authController.get('/register', (req, res) => {
+authController.get('/register', isGuest(), (req, res) => {
     res.render('register', { title: 'Register page' });
 });
 
-authController.post('/register', async (req, res) => {
+authController.post('/register', isGuest(), async (req, res) => {
     try {
+        if (req.body.username == '' || req.body.password == '' || req.body.address == '') {
+            throw new Error('All fields are required');
+        }
         if (req.body.password.length < 3) {
             throw new Error('Password must be at least 3 characters long');
         }
@@ -33,11 +37,11 @@ authController.post('/register', async (req, res) => {
     }
 });
 
-authController.get('/login', (req, res) => {
+authController.get('/login', isGuest(), (req, res) => {
     res.render('login', { title: 'Login page' });
 });
 
-authController.post('/login', async (req, res) => {
+authController.post('/login', isGuest(), async (req, res) => {
     try {
         const token = await login(req.body.username, req.body.password);
         res.cookie('token', token);

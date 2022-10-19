@@ -18,7 +18,19 @@ function isGuest() {
     }
 }
 
+function isOwner() {
+    return (req, res, next) => {
+        if (req.user && res.locals.publication.author.toString() == req.user._id.toString()) {
+            res.locals.isOwner = true;
+            next();
+        } else {
+            res.redirect('/404');
+        }
+    }
+}
+
 module.exports = {
     hasUser,
-    isGuest
+    isGuest,
+    isOwner
 }
