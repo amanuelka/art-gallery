@@ -25,17 +25,10 @@ async function update(publication, data) {
 };
 
 async function create(publication) {
-    // const userId = publication.author;
-    // const user = await User.findById(userId);
-    // user.publications.push(publication);
-    // await user.save();
     return Publication.create(publication);
 };
 
 async function share(publication, userId) {
-    // const user = await User.findById(userId);
-    // user.sharedPublications.push(publication);
-    // await user.save();
     publication.users.push(userId);
     publication.usersCount++;
     return publication.save();

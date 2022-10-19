@@ -1,4 +1,5 @@
 const { hasUser } = require('../middlewares/guards');
+const User = require('../models/User');
 const { getAll } = require('../services/publicationService');
 const { getUserById } = require('../services/userService');
 
@@ -14,13 +15,15 @@ homeController.get('/gallery', async (req, res) => {
     res.render('catalog', { title: 'Gallery', publications });
 });
 
-homeController.get('/profile', hasUser(), async (req, res) => {
-    const user = await getUserById(req.user._id);
-    res.render('profile', { title: 'My profile', user });
-});
-
 homeController.get('/404', async (req, res) => {
     res.render('404', { title: 'Error Page' });
+});
+
+homeController.get('/profile', hasUser(), async (req, res) => {
+    const user = await User.findById(req.user._id).populate('publications').populate('shares').lean();
+    const publicationTitles = user.publications.map(p => p.title).join(', ');
+    const sharedTitles = user.shares.map(p => p.title).join(', ');
+    res.render('profile', { title: 'My profile', ...user, publicationTitles, sharedTitles });
 });
 
 module.exports = homeController;

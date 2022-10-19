@@ -6,7 +6,7 @@ const userSchema = new Schema({
     address: { type: String, required: true, maxlength: [20, 'Address cannot be longer than 20 characters'] },
     hashedPassword: { type: String, required: true },
     publications: { type: [Types.ObjectId], ref: 'Publication', default: [] },
-    sharedPublications: { type: [Types.ObjectId], ref: 'Publication', default: [] }
+    shares: { type: [Types.ObjectId], ref: 'Publication', default: [] }
 });
 
 userSchema.index({ username: 1, }, {

@@ -47,8 +47,16 @@ function verifyToken(token) {
     return jwt.verify(token, JWT_SECRET);
 }
 
-async function getUserById(id) {
-    return User.findById(id).lean();
-}
+async function addPublication(publicationId, userId) {
+    const user = await User.findById(userId);
+    user.publications.push(publicationId);
+    return await user.save();
+};
 
-module.exports = { register, login, verifyToken, getUserById }
+async function addShare(publicationId, userId) {
+    const user = await User.findById(userId);
+    user.shares.push(publicationId);
+    return await user.save();
+};
+
+module.exports = { register, login, verifyToken, addPublication, addShare }
