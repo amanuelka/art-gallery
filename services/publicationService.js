@@ -5,7 +5,7 @@ async function getAll() {
 };
 
 async function getById(id) {
-    return Publication.findById(id).lean();
+    return Publication.findById(id).populate('author').lean();
 };
 
 async function getByIdNoLean(id) {

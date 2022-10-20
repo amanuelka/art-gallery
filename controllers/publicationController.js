@@ -29,8 +29,7 @@ publicationController.post('/create', hasUser(), async (req, res) => {
 });
 
 publicationController.get('/:id', preloader(true), async (req, res) => {
-    // const publication = res.locals.publication;
-    const publication = await Publication.findById(req.params.id).populate('author').lean();
+    const publication = res.locals.publication;
     if (req.user) {
         publication.isAuthor = publication.author.toString() == req.user._id.toString();
         publication.shared = publication.users.map(x => x.toString()).includes(req.user._id.toString());
