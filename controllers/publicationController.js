@@ -1,5 +1,6 @@
 const { hasUser, isOwner } = require('../middlewares/guards');
 const preloader = require('../middlewares/preloader');
+const Publication = require('../models/Publication');
 const { create, deleteById, share, update } = require('../services/publicationService');
 const { addPublication, addShare } = require('../services/userService');
 const { parseError } = require('../util/parser');
@@ -28,7 +29,8 @@ publicationController.post('/create', hasUser(), async (req, res) => {
 });
 
 publicationController.get('/:id', preloader(true), async (req, res) => {
-    const publication = res.locals.publication;
+    // const publication = res.locals.publication;
+    const publication = await Publication.findById(req.params.id).populate('author').lean();
     if (req.user) {
         publication.isAuthor = publication.author.toString() == req.user._id.toString();
         publication.shared = publication.users.map(x => x.toString()).includes(req.user._id.toString());
