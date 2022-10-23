@@ -1,29 +1,32 @@
 const { hasUser } = require('../middlewares/guards');
-const User = require('../models/User');
-const { getAll } = require('../services/publicationService');
-const { getUserById } = require('../services/userService');
+const { getAll, getOwn, getShared } = require('../services/publicationService');
 
 const homeController = require('express').Router();
 
 homeController.get('/', async (req, res) => {
     const publications = await getAll();
-    res.render('home', { title: 'Home Page', publications });
+    res.render('home', { publications });
 });
 
 homeController.get('/gallery', async (req, res) => {
     const publications = await getAll();
-    res.render('catalog', { title: 'Gallery', publications });
+    res.render('catalog', { publications });
 });
 
 homeController.get('/404', async (req, res) => {
-    res.render('404', { title: 'Error Page' });
+    res.render('404');
 });
 
 homeController.get('/profile', hasUser(), async (req, res) => {
-    const user = await User.findById(req.user._id).populate('publications').populate('shares').lean();
-    const publicationTitles = user.publications.map(p => p.title).join(', ');
-    const sharedTitles = user.shares.map(p => p.title).join(', ');
-    res.render('profile', { title: 'My profile', ...user, publicationTitles, sharedTitles });
+    const address = req.user.address;
+    
+    const publications = await getOwn(req.user._id);
+    const published = publications.map(p => p.title).join(', ');
+    
+    const shares = await getShared(req.user._id);
+    const shared = shares.map(s => s.title).join(', ');
+    
+    res.render('profile', { address, published, shared });
 });
 
 module.exports = homeController;

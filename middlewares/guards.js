@@ -5,7 +5,7 @@ function hasUser() {
         } else {
             res.redirect('/auth/login');
         }
-    }
+    };
 }
 
 function isGuest() {
@@ -15,7 +15,7 @@ function isGuest() {
         } else {
             next();
         }
-    }
+    };
 }
 
 function isOwner() {
@@ -26,11 +26,7 @@ function isOwner() {
         } else {
             res.redirect('/404');
         }
-    }
+    };
 }
 
-module.exports = {
-    hasUser,
-    isGuest,
-    isOwner
-}
+module.exports = { hasUser, isGuest, isOwner };

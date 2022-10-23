@@ -6,16 +6,14 @@
             <h2>Username: {{username}}</h2>
             <h3>Address: {{address}}</h3>
 
-            <!--If the user has shared publications, separate their titles with a comma and a space (, )-->
-            {{#if shares}}
-                <h4>Titles of shared posts by the user: {{sharedTitles}}</h4>
+            {{#if shared}}
+                <h4>Titles of shared posts by the user: {{shared}}</h4>
             {{else}}
                 <h4>Titles of shared posts by the user: Not yet.</h4>
             {{/if}}
 
-            <!--If the user has created their own publications, separate their titles with a comma and a space (, )-->
-            {{#if publications}}
-                <h4>Titles of which the user is the author: {{publicationTitles}}</h4>
+            {{#if published}}
+                <h4>Titles of which the user is the author: {{published}}</h4>
             {{else}}
                 <h4>Titles of which the user is the author: Not yet.</h4>
             {{/if}}

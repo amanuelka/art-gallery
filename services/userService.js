@@ -34,10 +34,11 @@ async function login(username, password) {
     return createSession(user);
 }
 
-function createSession({ _id, username }) {
+function createSession({ _id, username, address }) {
     const payload = {
         _id,
-        username
+        username,
+        address
     };
 
     return jwt.sign(payload, JWT_SECRET);
@@ -47,16 +48,4 @@ function verifyToken(token) {
     return jwt.verify(token, JWT_SECRET);
 }
 
-async function addPublication(publicationId, userId) {
-    const user = await User.findById(userId);
-    user.publications.push(publicationId);
-    return await user.save();
-};
-
-async function addShare(publicationId, userId) {
-    const user = await User.findById(userId);
-    user.shares.push(publicationId);
-    return await user.save();
-};
-
-module.exports = { register, login, verifyToken, addPublication, addShare }
+module.exports = { register, login, verifyToken };

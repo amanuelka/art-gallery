@@ -1,14 +1,12 @@
 const { hasUser, isOwner } = require('../middlewares/guards');
+const { parseError } = require('../middlewares/parser');
 const preloader = require('../middlewares/preloader');
-const Publication = require('../models/Publication');
-const { create, deleteById, share, update } = require('../services/publicationService');
-const { addPublication, addShare } = require('../services/userService');
-const { parseError } = require('../util/parser');
+const { create, deleteById, share, update, getById } = require('../services/publicationService');
 
 const publicationController = require('express').Router();
 
 publicationController.get('/create', hasUser(), (req, res) => {
-    res.render('create', { title: 'Create publication' });
+    res.render('create');
 });
 
 publicationController.post('/create', hasUser(), async (req, res) => {
@@ -17,40 +15,36 @@ publicationController.post('/create', hasUser(), async (req, res) => {
         if (Object.values(data).some(v => !v)) {
             throw new Error('All fields are required');
         }
-        const publication = await create(data);
-        await addPublication(publication._id, req.user._id);
+        await create(data);
         res.redirect('/gallery');
     } catch (error) {
-        res.render('create', {
-            errors: parseError(error),
-            body: data
-        });
+        res.render('create', { errors: parseError(error), ...data });
     }
 });
 
-publicationController.get('/:id', preloader(true), async (req, res) => {
-    const publication = res.locals.publication;
+publicationController.get('/:id', async (req, res) => {
+    const publication = await getById(req.params.id);
+
     if (req.user) {
-        publication.isAuthor = publication.author.toString() == req.user._id.toString();
-        publication.shared = publication.users.map(x => x.toString()).includes(req.user._id.toString());
+        publication.isAuthor = publication.author == req.user._id;
+        publication.isShared = publication.shares.some(u => u._id == req.user._id);
     }
 
     res.render('details', { ...publication });
 });
 
-publicationController.get('/:id/edit', hasUser(), preloader(true), isOwner(), async (req, res) => {
+publicationController.get('/:id/edit', hasUser(), preloader(), isOwner(), async (req, res) => {
     const publication = res.locals.publication;
-    res.render('edit', { title: 'Edit publication', publication });
+    res.render('edit', { ...publication });
 });
 
 publicationController.post('/:id/edit', hasUser(), preloader(), isOwner(), async (req, res) => {
-    const publication = res.locals.publication;
 
     try {
-        await update(publication, req.body);
+        await update(req.params.id, { ...req.body, _id: req.params.id });
         res.redirect(`/publications/${req.params.id}`);
     } catch (error) {
-        res.render('edit', { errors: parseError(error), publication: req.body });
+        res.render('edit', { errors: parseError(error), ...req.body });
     }
 });
 
@@ -59,12 +53,10 @@ publicationController.get('/:id/delete', hasUser(), preloader(), isOwner(), asyn
     res.redirect('/gallery');
 });
 
-publicationController.get('/:id/share', preloader(), async (req, res) => {
-    const publication = res.locals.publication;
-    if (publication.author.toString() != req.user._id.toString() &&
-        publication.users.map(u => u.toString()).includes(req.user._id.toString()) == false) {
-        await share(publication, req.user._id);
-        await addShare(publication._id, req.user._id);
+publicationController.get('/:id/share', async (req, res) => {
+    const publication = await getById(req.params.id);
+    if (publication.author != req.user._id && publication.shares.some(u => u._id == req.user._id) == false) {
+        await share(req.params.id, req.user._id);
     }
     res.redirect(`/publications/${req.params.id}`);
 });
