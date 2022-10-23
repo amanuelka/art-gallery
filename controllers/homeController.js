@@ -18,15 +18,13 @@ homeController.get('/404', async (req, res) => {
 });
 
 homeController.get('/profile', hasUser(), async (req, res) => {
-    const address = req.user.address;
-    
     const publications = await getOwn(req.user._id);
     const published = publications.map(p => p.title).join(', ');
-    
+
     const shares = await getShared(req.user._id);
     const shared = shares.map(s => s.title).join(', ');
-    
-    res.render('profile', { address, published, shared });
+
+    res.render('profile', { published, shared });
 });
 
 module.exports = homeController;
